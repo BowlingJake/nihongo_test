@@ -1,0 +1,25 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>日檢 Quiz</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>日檢衝刺 Quiz</h1>
+    <select id="mode">
+      <option value="Vocab">單字配對</option>
+      <option value="GrMatch">文法配對</option>
+      <option value="GrFill">文法填空</option>
+    </select>
+    <button id="start">開始</button>
+  </header>
+
+  <main id="quiz-container"></main>
+  <button id="next" class="hidden">下一題</button>
+
+  <script src="app.js"></script>
+</body>
+</html>
