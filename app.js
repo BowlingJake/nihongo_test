@@ -1,4 +1,4 @@
-﻿const SHEET_CSV = {
+const SHEET_CSV = {
   Vocab:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vTKgM8Hm8JC7EonaBhUU_RGcU2EsFOmUXdhHjwUS4Syu8ORdFF3v_tWMWMdeksce8P53fJ5zSHOjUx3/pubhtml?gid=1246786786&single=true',
   GrMatch: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTKgM8Hm8JC7EonaBhUU_RGcU2EsFOmUXdhHjwUS4Syu8ORdFF3v_tWMWMdeksce8P53fJ5zSHOjUx3/pubhtml?gid=477155350&single=true',
   GrFill:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTKgM8Hm8JC7EonaBhUU_RGcU2EsFOmUXdhHjwUS4Syu8ORdFF3v_tWMWMdeksce8P53fJ5zSHOjUx3/pubhtml?gid=97078008&single=true'
