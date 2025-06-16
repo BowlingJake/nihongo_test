@@ -39,18 +39,32 @@ function showQuestion() {
     promptHTML = `<p>${q[0].replace(/___/,'<strong>___</strong>')}</p>`;
   }
 
-  container.innerHTML = `<div class="card">${promptHTML}</div>`;
+  // 建立題目卡片
+  container.innerHTML = `<div class="card prompt">${promptHTML}</div>`;
+  
+  // 建立選項容器
+  buildChoices(mode, q, container);
+}
+
+function buildChoices(mode, q, container) {
   // 產生選項：正解 + 3 干擾
   const pool = current.map(r=> (mode==='GrFill'? r[2]: r[1]) );
   const correct = mode==='GrFill'? q[2]: q[1];
   const opts = shuffle([correct, ...sample(pool,3)]);
+  
+  // 建立選項容器
+  const choicesContainer = document.createElement('div');
+  choicesContainer.className = 'choices';
+  
   opts.forEach(opt=>{
     const div = document.createElement('div');
     div.textContent = opt;
     div.className = 'choice';
     div.onclick = () => choose(opt===correct, div);
-    container.appendChild(div);
+    choicesContainer.appendChild(div);
   });
+  
+  container.appendChild(choicesContainer);
 }
 
 function choose(isCorrect, el) {
