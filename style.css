@@ -249,3 +249,261 @@ header button:active {
     min-height: 45px;
   }
 }
+
+/* 新增選中狀態樣式 */
+.choices .choice.selected {
+  background: #e3f2fd;
+  border-color: #2196f3;
+  color: #1565c0;
+  box-shadow: 0 4px 16px rgba(33, 150, 243, 0.3);
+  transform: translateY(-2px);
+}
+
+/* 回答按鈕樣式 */
+.answer-btn {
+  display: block;
+  margin: 1rem auto;
+  padding: 0.75rem 2rem;
+  background: #ff9800;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 120px;
+  box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
+}
+
+.answer-btn:hover {
+  background: #f57c00;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(255, 152, 0, 0.4);
+}
+
+.answer-btn:active {
+  transform: translateY(0);
+}
+
+/* 打勾和叉叉圖標樣式 */
+.check-mark {
+  display: inline-block;
+  margin-left: 0.5rem;
+  color: #28a745;
+  font-weight: bold;
+  font-size: 1.2em;
+  animation: checkmark 0.3s ease-in-out;
+}
+
+.cross-mark {
+  display: inline-block;
+  margin-left: 0.5rem;
+  color: #dc3545;
+  font-weight: bold;
+  font-size: 1.2em;
+  animation: crossmark 0.3s ease-in-out;
+}
+
+/* 打勾動畫 */
+@keyframes checkmark {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 叉叉動畫 */
+@keyframes crossmark {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 手機端回答按鈕響應式設計 */
+@media (max-width: 480px) {
+  .answer-btn {
+    width: 100%;
+    max-width: 280px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 375px) {
+  .check-mark,
+  .cross-mark {
+    font-size: 1.1em;
+  }
+}
+
+/* 詳細解答樣式 */
+.detail-answer {
+  background: #f8f9fa;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.detail-title {
+  font-weight: bold;
+  color: #495057;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.detail-content {
+  color: #6c757d;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+/* 手機端詳細解答響應式設計 */
+@media (max-width: 480px) {
+  .detail-answer {
+    padding: 0.75rem;
+    margin-top: 0.75rem;
+  }
+  
+  .detail-title {
+    font-size: 0.9rem;
+  }
+  
+  .detail-content {
+    font-size: 0.85rem;
+  }
+}
+
+/* 單字學習表格樣式 */
+.vocab-table-container {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.vocab-table-container h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-size: 1.4rem;
+}
+
+.vocab-table {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table-header {
+  display: contents;
+}
+
+.table-row {
+  display: contents;
+}
+
+.table-cell {
+  padding: 1rem;
+  border-right: 1px solid #e9ecef;
+  border-bottom: 1px solid #e9ecef;
+  text-align: center;
+  word-break: break-all;
+}
+
+.table-cell:last-child {
+  border-right: none;
+}
+
+.table-cell.header {
+  background: #f8f9fa;
+  font-weight: bold;
+  color: #495057;
+  font-size: 1rem;
+}
+
+.table-row.even .table-cell {
+  background: #ffffff;
+}
+
+.table-row.odd .table-cell {
+  background: #f8f9fa;
+}
+
+.table-cell.kanji {
+  font-weight: bold;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.table-cell.hiragana {
+  color: #007bff;
+  font-weight: 500;
+}
+
+.table-cell.meaning {
+  color: #6c757d;
+  font-size: 0.95rem;
+}
+
+/* 手機端表格響應式設計 */
+@media (max-width: 480px) {
+  .vocab-table-container {
+    padding: 1rem;
+  }
+  
+  .vocab-table-container h2 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .table-cell {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .table-cell.header {
+    font-size: 0.9rem;
+  }
+  
+  .table-cell.kanji {
+    font-size: 1rem;
+  }
+  
+  .table-cell.meaning {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 375px) {
+  .table-cell {
+    padding: 0.6rem 0.4rem;
+    font-size: 0.8rem;
+  }
+  
+  .table-cell.kanji {
+    font-size: 0.9rem;
+  }
+}
