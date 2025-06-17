@@ -507,3 +507,62 @@ header button:active {
     font-size: 0.9rem;
   }
 }
+
+/* Options Container */
+.options-container {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.options-container label {
+  font-weight: bold;
+  color: #333;
+}
+
+.options-container select {
+  padding: 0.5rem;
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  font-size: 1rem;
+  background: white;
+  flex: 1;
+}
+
+/* Pagination */
+#pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.pagination-btn {
+  padding: 0.5rem 1rem;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pagination-btn:hover {
+  background: #0056b3;
+}
+
+.pagination-btn.disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination-btn.current {
+  background: #0056b3;
+  font-weight: bold;
+}

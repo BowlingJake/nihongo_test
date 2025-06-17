@@ -10,15 +10,35 @@
   <header>
     <h1>日檢衝刺 Quiz</h1>
     <select id="mode">
-      <option value="Vocab">單字配對</option>
-      <option value="Vocab2">單字學習</option>
-      <option value="GrMatch">文法配對</option>
-      <option value="GrFill">文法填空</option>
+      <option value="quiz">測驗模式</option>
+      <option value="learn">單字學習</option>
     </select>
     <button id="start">開始</button>
   </header>
 
+  <div id="quiz-options" class="options-container">
+    <label for="quiz-type">選擇測驗類型：</label>
+    <select id="quiz-type">
+      <option value="Vocab">單字配對</option>
+      <option value="GrMatch">文法配對</option>
+      <option value="GrFill">文法填空</option>
+    </select>
+  </div>
+
+  <div id="learn-options" class="options-container hidden">
+    <label for="learn-category">選擇學習領域：</label>
+    <select id="learn-category">
+      <option value="Vocab_politics">政治</option>
+      <option value="Vocab_economy">經濟</option>
+      <option value="Vocab_Laws">法律</option>
+      <option value="Vocab_health">醫療</option>
+      <option value="Vocab_phycology">心理</option>
+      <option value="Vocab_life">日常生活</option>
+    </select>
+  </div>
+
   <main id="quiz-container"></main>
+  <div id="pagination-container"></div>
   <button id="next" class="hidden">下一題</button>
 
   <script src="app.js"></script>

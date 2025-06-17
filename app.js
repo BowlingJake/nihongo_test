@@ -1,42 +1,90 @@
 const SHEET_CSV = {
   Vocab:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vTKgM8Hm8JC7EonaBhUU_RGcU2EsFOmUXdhHjwUS4Syu8ORdFF3v_tWMWMdeksce8P53fJ5zSHOjUx3/pub?gid=191931963&single=true&output=csv',
+  Vocab_politics: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTKgM8Hm8JC7EonaBhUU_RGcU2EsFOmUXdhHjwUS4Syu8ORdFF3v_tWMWMdeksce8P53fJ5zSHOjUx3/pub?gid=836666397&single=true&output=csv',
+  Vocab_economy: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTKgM8Hm8JC7EonaBhUU_RGcU2EsFOmUXdhHjwUS4Syu8ORdFF3v_tWMWMdeksce8P53fJ5zSHOjUx3/pub?gid=2040366335&single=true&output=csv',
+  Vocab_Laws: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTKgM8Hm8JC7EonaBhUU_RGcU2EsFOmUXdhHjwUS4Syu8ORdFF3v_tWMWMdeksce8P53fJ5zSHOjUx3/pub?gid=190603581&single=true&output=csv',
+  Vocab_health: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTKgM8Hm8JC7EonaBhUU_RGcU2EsFOmUXdhHjwUS4Syu8ORdFF3v_tWMWMdeksce8P53fJ5zSHOjUx3/pub?gid=220584476&single=true&output=csv',
+  Vocab_phycology: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTKgM8Hm8JC7EonaBhUU_RGcU2EsFOmUXdhHjwUS4Syu8ORdFF3v_tWMWMdeksce8P53fJ5zSHOjUx3/pub?gid=1398920549&single=true&output=csv',
+  Vocab_life: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTKgM8Hm8JC7EonaBhUU_RGcU2EsFOmUXdhHjwUS4Syu8ORdFF3v_tWMWMdeksce8P53fJ5zSHOjUx3/pub?gid=1458245094&single=true&output=csv',
   Vocab2:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTKgM8Hm8JC7EonaBhUU_RGcU2EsFOmUXdhHjwUS4Syu8ORdFF3v_tWMWMdeksce8P53fJ5zSHOjUx3/pub?gid=1246786786&single=true&output=csv',
   GrMatch: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTKgM8Hm8JC7EonaBhUU_RGcU2EsFOmUXdhHjwUS4Syu8ORdFF3v_tWMWMdeksce8P53fJ5zSHOjUx3/pub?gid=477155350&single=true&output=csv',
   GrFill:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTKgM8Hm8JC7EonaBhUU_RGcU2EsFOmUXdhHjwUS4Syu8ORdFF3v_tWMWMdeksce8P53fJ5zSHOjUx3/pub?gid=97078008&single=true&output=csv'
 };
 const TOTAL = 10;
-let questions = {}, current = [];
+const ITEMS_PER_PAGE = 30;
+let questions = {}, current = [], vocabData = [];
 
-document.getElementById('start').onclick = async () => {
-  const mode = document.getElementById('mode').value;
-  if (!questions[mode]) {
-    const res = await fetch(SHEET_CSV[mode]);
-    const text = await res.text();
-    questions[mode] = parseCSV(text, mode);
-  }
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('mode').addEventListener('change', (e) => {
+    const mode = e.target.value;
+    const quizOptions = document.getElementById('quiz-options');
+    const learnOptions = document.getElementById('learn-options');
   
-  if (mode === 'Vocab2') {
-    // 單字學習模式：顯示完整表格
-    showVocabTable(questions[mode]);
-  } else {
-    // 測驗模式
-    current = shuffle(questions[mode]).slice(0, TOTAL);
-    window.quizState = { mode, idx: 0, score: 0, selectedChoice: null, answered: false };
+    if (mode === 'learn') {
+      quizOptions.classList.add('hidden');
+      learnOptions.classList.remove('hidden');
+    } else { // quiz
+      quizOptions.classList.remove('hidden');
+      learnOptions.classList.add('hidden');
+    }
+  });
+  
+  document.getElementById('start').onclick = async () => {
+    const mainMode = document.getElementById('mode').value;
+    
+    // Clear previous content
+    document.getElementById('quiz-container').innerHTML = '';
+    document.getElementById('pagination-container').innerHTML = '';
+    document.getElementById('next').classList.add('hidden');
+  
+    if (mainMode === 'learn') {
+      const category = document.getElementById('learn-category').value;
+      if (!questions[category]) {
+        const res = await fetch(SHEET_CSV[category]);
+        const text = await res.text();
+        questions[category] = parseCSV(text, category);
+      }
+      vocabData = questions[category];
+      displayVocabLearnPage(1); // Display first page
+    } else { // 'quiz' mode
+      const quizType = document.getElementById('quiz-type').value;
+      if (!questions[quizType]) {
+        const res = await fetch(SHEET_CSV[quizType]);
+        const text = await res.text();
+        questions[quizType] = parseCSV(text, quizType);
+      }
+      
+      current = shuffle(questions[quizType]).slice(0, TOTAL);
+      window.quizState = { mode: quizType, idx: 0, score: 0, selectedChoice: null, answered: false };
+      showQuestion();
+    }
+  };
+  
+  document.getElementById('next').onclick = () => {
+    window.quizState.idx++;
     showQuestion();
   }
-};
+});
 
-function showVocabTable(data) {
+function displayVocabLearnPage(page) {
   const container = document.getElementById('quiz-container');
-  const nextBtn = document.getElementById('next');
-  
-  // 隱藏下一題按鈕
-  nextBtn.classList.add('hidden');
-  
-  // 創建表格HTML
+  const paginationContainer = document.getElementById('pagination-container');
+  container.innerHTML = '';
+  paginationContainer.innerHTML = '';
+
+  const totalPages = Math.ceil(vocabData.length / ITEMS_PER_PAGE);
+  page = Math.max(1, Math.min(page, totalPages)); // Ensure page is within bounds
+
+  const start = (page - 1) * ITEMS_PER_PAGE;
+  const end = start + ITEMS_PER_PAGE;
+  const pageData = vocabData.slice(start, end);
+
+  const categoryDropdown = document.getElementById('learn-category');
+  const selectedCategoryName = categoryDropdown.options[categoryDropdown.selectedIndex].text;
+
   let tableHTML = `
     <div class="vocab-table-container">
-      <h2>📚 單字學習表</h2>
+      <h2>📚 單字學習表 (${selectedCategoryName})</h2>
       <div class="vocab-table">
         <div class="table-header">
           <div class="table-cell header">漢字</div>
@@ -45,8 +93,7 @@ function showVocabTable(data) {
         </div>
   `;
   
-  // 添加每一行數據
-  data.forEach((row, index) => {
+  pageData.forEach((row, index) => {
     tableHTML += `
       <div class="table-row ${index % 2 === 0 ? 'even' : 'odd'}">
         <div class="table-cell kanji">${row[0] || ''}</div>
@@ -60,8 +107,38 @@ function showVocabTable(data) {
       </div>
     </div>
   `;
-  
   container.innerHTML = tableHTML;
+  
+  // Render Pagination
+  if (totalPages <= 1) return;
+
+  // Previous Button
+  const prevBtn = document.createElement('button');
+  prevBtn.textContent = '上一頁';
+  prevBtn.className = 'pagination-btn';
+  if (page === 1) {
+    prevBtn.classList.add('disabled');
+  } else {
+    prevBtn.onclick = () => displayVocabLearnPage(page - 1);
+  }
+  paginationContainer.appendChild(prevBtn);
+
+  // Page numbers info
+  const pageIndicator = document.createElement('span');
+  pageIndicator.textContent = `第 ${page} / ${totalPages} 頁`;
+  pageIndicator.className = 'pagination-info'; // You can style this
+  paginationContainer.appendChild(pageIndicator);
+  
+  // Next Button
+  const paginationNextBtn = document.createElement('button');
+  paginationNextBtn.textContent = '下一頁';
+  paginationNextBtn.className = 'pagination-btn';
+  if (page === totalPages) {
+    paginationNextBtn.classList.add('disabled');
+  } else {
+    paginationNextBtn.onclick = () => displayVocabLearnPage(page + 1);
+  }
+  paginationContainer.appendChild(paginationNextBtn);
 }
 
 function showQuestion() {
@@ -77,6 +154,8 @@ function showQuestion() {
   
   if (idx >= TOTAL) {
     container.innerHTML = `<h2>🎉 分數：${score}/${TOTAL}</h2>`;
+    // Also clear pagination if it exists
+    document.getElementById('pagination-container').innerHTML = '';
     return;
   }
 
@@ -117,9 +196,6 @@ function buildChoices(mode, q, container) {
       { text: q[5], index: 4 }  // F欄 = 選項4
     ];
     
-    console.log('四個選項:', options);
-    console.log('正確答案編號 (G欄):', q[6]);
-    
     // 建立選項容器
     const choicesContainer = document.createElement('div');
     choicesContainer.className = 'choices';
@@ -147,10 +223,6 @@ function buildChoices(mode, q, container) {
       { text: q[3], index: 3 }, // D欄 = 選項3
       { text: q[4], index: 4 }  // E欄 = 選項4
     ];
-    
-    console.log('GrFill四個選項:', options);
-    console.log('GrFill正確答案編號 (F欄):', q[5]);
-    console.log('GrFill詳細解答 (G欄):', q[6]);
     
     // 建立選項容器
     const choicesContainer = document.createElement('div');
@@ -265,11 +337,6 @@ function showAnswer() {
   document.getElementById('next').classList.remove('hidden');
 }
 
-document.getElementById('next').onclick = () => {
-  window.quizState.idx++;
-  showQuestion();
-}
-
 // —— 工具函式 ——
 const shuffle = arr => arr.sort(()=>Math.random()-0.5);
 const sample = (arr, n) => shuffle([...new Set(arr)]).slice(0,n);
@@ -284,7 +351,7 @@ function parseCSV(text, mode) {
     .map(line=> {
       const parts = line.split(',');
       if (mode==='Vocab')   return [parts[0], parts[1], parts[2], parts[3], parts[4], parts[5], parts[6]]; // 7個欄位
-      if (mode==='Vocab2')  return [parts[0], parts[1], parts[2]]; // 3個欄位：漢字、平假名、詞義
+      if (mode.startsWith('Vocab_'))  return [parts[0] || '', parts[1] || '', parts[2] || '']; // 3個欄位
       if (mode==='GrMatch') return [parts[0], parts[1], parts[2]];
       if (mode==='GrFill')  return [parts[0], parts[1], parts[2], parts[3], parts[4], parts[5], parts[6]]; // 7個欄位
     });
