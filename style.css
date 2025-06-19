@@ -75,7 +75,7 @@ header button:active {
 .choice.correct { background: #c8f7c5; }
 .choice.wrong   { background: #f8d7da; }
 .choice:hover   { background: #f0f0f0; }
-.hidden { display: none; }
+.hidden { display: none !important; }
 #next {
   display: block;
   margin: var(--gap) auto;
@@ -565,4 +565,257 @@ header button:active {
 .pagination-btn.current {
   background: #0056b3;
   font-weight: bold;
+}
+
+/* 文法測驗樣式 */
+.grammar-quiz-container {
+  margin: 1rem 0;
+}
+
+.grammar-quiz-container h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-size: 1.4rem;
+}
+
+.quiz-questions {
+  margin-bottom: 2rem;
+}
+
+.quiz-question {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.question-header {
+  margin-bottom: 1rem;
+}
+
+.question-number {
+  background: #007bff;
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.question-text {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+  color: #333;
+}
+
+.question-choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.quiz-choice {
+  background: var(--card-bg);
+  border: 2px solid var(--card-border);
+  border-radius: 8px;
+  padding: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+  text-align: left;
+}
+
+.quiz-choice:hover {
+  border-color: #007bff;
+  background: #f8f9fa;
+  transform: translateY(-1px);
+}
+
+.quiz-choice.selected {
+  border-color: #007bff;
+  background: #e3f2fd;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
+}
+
+.quiz-choice.correct {
+  background: #d4edda;
+  border-color: #28a745;
+  color: #155724;
+}
+
+.quiz-choice.wrong {
+  background: #f8d7da;
+  border-color: #dc3545;
+  color: #721c24;
+}
+
+.question-detail {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.quiz-controls {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.quiz-score {
+  text-align: center;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: #d1ecf1;
+  border: 1px solid #bee5eb;
+  border-radius: 8px;
+}
+
+.quiz-score h3 {
+  color: #0c5460;
+  margin: 0;
+}
+
+.pagination-info {
+  margin: 0 1rem;
+  font-weight: 500;
+  color: #666;
+}
+
+/* 手機端響應式設計 */
+@media (max-width: 480px) {
+  .question-choices {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .quiz-question {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .question-text {
+    font-size: 1rem;
+  }
+  
+  .quiz-choice {
+    padding: 0.6rem;
+    font-size: 0.9rem;
+  }
+  
+  .grammar-quiz-container h2 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 375px) {
+  .quiz-question {
+    padding: 0.75rem;
+  }
+  
+  .question-text {
+    font-size: 0.95rem;
+  }
+  
+  .quiz-choice {
+    padding: 0.5rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* 隱藏讀音模式樣式 */
+.clickable-kanji {
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.clickable-kanji:hover {
+  background-color: #e3f2fd !important;
+  transform: scale(1.05);
+}
+
+.clickable-kanji:after {
+  content: "👆";
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  font-size: 0.7rem;
+  opacity: 0.6;
+}
+
+.clickable-kanji.clicked {
+  background-color: #c8e6c9 !important;
+  border: 2px solid #4caf50;
+}
+
+.clickable-kanji.clicked:after {
+  content: "✓";
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.hidden-reading {
+  color: transparent !important;
+  background-color: #f5f5f5 !important;
+  position: relative;
+}
+
+.hidden-reading:before {
+  content: "???";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #999;
+  font-style: italic;
+  font-size: 0.8rem;
+}
+
+.shown-reading {
+  color: #007bff !important;
+  background-color: #e8f4f8 !important;
+  font-weight: bold;
+  animation: showReading 0.5s ease;
+}
+
+@keyframes showReading {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 手機端隱藏讀音模式 */
+@media (max-width: 480px) {
+  .clickable-kanji:after {
+    font-size: 0.6rem;
+    top: -3px;
+    right: -3px;
+  }
+  
+  .hidden-reading:before {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 375px) {
+  .clickable-kanji:after {
+    font-size: 0.5rem;
+  }
+  
+  .hidden-reading:before {
+    font-size: 0.6rem;
+  }
 }

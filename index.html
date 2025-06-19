@@ -9,31 +9,45 @@
 <body>
   <header>
     <h1>日檢衝刺 Quiz</h1>
-    <select id="mode">
-      <option value="quiz">測驗模式</option>
-      <option value="learn">單字學習</option>
+    <select id="subject-type">
+      <option value="">請選擇類型</option>
+      <option value="grammar">文法</option>
+      <option value="vocab">單字</option>
     </select>
     <button id="start">開始</button>
   </header>
 
-  <div id="quiz-options" class="options-container">
-    <label for="quiz-type">選擇測驗類型：</label>
-    <select id="quiz-type">
-      <option value="Vocab">單字配對</option>
-      <option value="GrMatch">文法配對</option>
-      <option value="GrFill">文法填空</option>
+  <!-- 文法選項 -->
+  <div id="grammar-options" class="options-container hidden">
+    <label for="grammar-mode">選擇文法模式：</label>
+    <select id="grammar-mode">
+      <option value="Grammar">文法學習</option>
+      <option value="GrammarFill">文法填空測驗</option>
     </select>
   </div>
 
-  <div id="learn-options" class="options-container hidden">
-    <label for="learn-category">選擇學習領域：</label>
-    <select id="learn-category">
+  <!-- 單字選項 -->
+  <div id="vocab-options" class="options-container hidden">
+    <label for="vocab-mode">選擇單字模式：</label>
+    <select id="vocab-mode">
+      <option value="learn">單字學習</option>
+      <option value="learn-hidden">單字學習（隱藏讀音）</option>
+      <option value="quiz">單字測驗</option>
+    </select>
+  </div>
+
+  <!-- 單字領域選項（只在單字模式下顯示）-->
+  <div id="vocab-category-options" class="options-container hidden">
+    <label for="vocab-category">選擇學習領域：</label>
+    <select id="vocab-category">
       <option value="Vocab_politics">政治</option>
       <option value="Vocab_economy">經濟</option>
       <option value="Vocab_Laws">法律</option>
       <option value="Vocab_health">醫療</option>
       <option value="Vocab_phycology">心理</option>
       <option value="Vocab_life">日常生活</option>
+      <option value="Vocab">綜合單字</option>
+      <option value="Vocab2">單字2</option>
     </select>
   </div>
 

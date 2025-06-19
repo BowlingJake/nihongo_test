@@ -7,56 +7,127 @@ const SHEET_CSV = {
   Vocab_phycology: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTKgM8Hm8JC7EonaBhUU_RGcU2EsFOmUXdhHjwUS4Syu8ORdFF3v_tWMWMdeksce8P53fJ5zSHOjUx3/pub?gid=1398920549&single=true&output=csv',
   Vocab_life: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTKgM8Hm8JC7EonaBhUU_RGcU2EsFOmUXdhHjwUS4Syu8ORdFF3v_tWMWMdeksce8P53fJ5zSHOjUx3/pub?gid=1458245094&single=true&output=csv',
   Vocab2:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTKgM8Hm8JC7EonaBhUU_RGcU2EsFOmUXdhHjwUS4Syu8ORdFF3v_tWMWMdeksce8P53fJ5zSHOjUx3/pub?gid=1246786786&single=true&output=csv',
-  GrMatch: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTKgM8Hm8JC7EonaBhUU_RGcU2EsFOmUXdhHjwUS4Syu8ORdFF3v_tWMWMdeksce8P53fJ5zSHOjUx3/pub?gid=477155350&single=true&output=csv',
-  GrFill:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTKgM8Hm8JC7EonaBhUU_RGcU2EsFOmUXdhHjwUS4Syu8ORdFF3v_tWMWMdeksce8P53fJ5zSHOjUx3/pub?gid=97078008&single=true&output=csv'
+  Grammar: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTKgM8Hm8JC7EonaBhUU_RGcU2EsFOmUXdhHjwUS4Syu8ORdFF3v_tWMWMdeksce8P53fJ5zSHOjUx3/pub?gid=477155350&single=true&output=csv',
+  GrammarFill:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTKgM8Hm8JC7EonaBhUU_RGcU2EsFOmUXdhHjwUS4Syu8ORdFF3v_tWMWMdeksce8P53fJ5zSHOjUx3/pub?gid=97078008&single=true&output=csv'
 };
 const TOTAL = 10;
 const ITEMS_PER_PAGE = 30;
 let questions = {}, current = [], vocabData = [];
 
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('mode').addEventListener('change', (e) => {
-    const mode = e.target.value;
-    const quizOptions = document.getElementById('quiz-options');
-    const learnOptions = document.getElementById('learn-options');
+  // 處理主類型選擇（文法/單字）
+  document.getElementById('subject-type').addEventListener('change', (e) => {
+    const subjectType = e.target.value;
+    const grammarOptions = document.getElementById('grammar-options');
+    const vocabOptions = document.getElementById('vocab-options');
+    const vocabCategoryOptions = document.getElementById('vocab-category-options');
   
-    if (mode === 'learn') {
-      quizOptions.classList.add('hidden');
-      learnOptions.classList.remove('hidden');
-    } else { // quiz
-      quizOptions.classList.remove('hidden');
-      learnOptions.classList.add('hidden');
+    // 清空之前的內容
+    document.getElementById('quiz-container').innerHTML = '';
+    document.getElementById('pagination-container').innerHTML = '';
+    
+    // 隱藏所有選項並重置選擇
+    grammarOptions.classList.add('hidden');
+    vocabOptions.classList.add('hidden');
+    vocabCategoryOptions.classList.add('hidden');
+    
+    // 重置選擇器的值
+    document.getElementById('grammar-mode').value = 'Grammar';
+    document.getElementById('vocab-mode').value = 'learn';
+    document.getElementById('vocab-category').value = 'Vocab_politics';
+    
+    if (subjectType === 'grammar') {
+      // 文法模式：只顯示文法選項，確保不顯示任何單字相關選項
+      grammarOptions.classList.remove('hidden');
+    } else if (subjectType === 'vocab') {
+      // 單字模式：顯示單字模式選項
+      vocabOptions.classList.remove('hidden');
+    }
+  });
+
+  // 處理單字模式選擇
+  document.getElementById('vocab-mode').addEventListener('change', (e) => {
+    const vocabMode = e.target.value;
+    const vocabCategoryOptions = document.getElementById('vocab-category-options');
+    
+    // 確保只在單字模式且有選擇時才顯示領域選項
+    if (vocabMode && document.getElementById('subject-type').value === 'vocab') {
+      vocabCategoryOptions.classList.remove('hidden');
+    } else {
+      vocabCategoryOptions.classList.add('hidden');
     }
   });
   
   document.getElementById('start').onclick = async () => {
-    const mainMode = document.getElementById('mode').value;
+    const subjectType = document.getElementById('subject-type').value;
+    
+    if (!subjectType) {
+      alert('請先選擇文法或單字類型！');
+      return;
+    }
     
     // Clear previous content
     document.getElementById('quiz-container').innerHTML = '';
     document.getElementById('pagination-container').innerHTML = '';
     document.getElementById('next').classList.add('hidden');
   
-    if (mainMode === 'learn') {
-      const category = document.getElementById('learn-category').value;
-      if (!questions[category]) {
-        const res = await fetch(SHEET_CSV[category]);
-        const text = await res.text();
-        questions[category] = parseCSV(text, category);
-      }
-      vocabData = questions[category];
-      displayVocabLearnPage(1); // Display first page
-    } else { // 'quiz' mode
-      const quizType = document.getElementById('quiz-type').value;
-      if (!questions[quizType]) {
-        const res = await fetch(SHEET_CSV[quizType]);
-        const text = await res.text();
-        questions[quizType] = parseCSV(text, quizType);
+    if (subjectType === 'grammar') {
+      // 文法模式
+      const grammarMode = document.getElementById('grammar-mode').value;
+      if (!grammarMode) {
+        alert('請選擇文法模式！');
+        return;
       }
       
-      current = shuffle(questions[quizType]).slice(0, TOTAL);
-      window.quizState = { mode: quizType, idx: 0, score: 0, selectedChoice: null, answered: false };
-      showQuestion();
+      if (!questions[grammarMode]) {
+        const res = await fetch(SHEET_CSV[grammarMode]);
+        const text = await res.text();
+        questions[grammarMode] = parseCSV(text, grammarMode);
+      }
+      
+      if (grammarMode === 'Grammar') {
+        // 文法學習頁面
+        vocabData = questions[grammarMode];
+        displayVocabLearnPage(1, false); // 文法不使用隱藏模式
+      } else if (grammarMode === 'GrammarFill') {
+        // 文法測驗翻頁模式
+        vocabData = questions[grammarMode];
+        displayGrammarQuizPage(1);
+      }
+    } else if (subjectType === 'vocab') {
+      // 單字模式
+      const vocabMode = document.getElementById('vocab-mode').value;
+      const vocabCategory = document.getElementById('vocab-category').value;
+      
+      if (!vocabMode) {
+        alert('請選擇單字模式！');
+        return;
+      }
+      if (!vocabCategory) {
+        alert('請選擇學習領域！');
+        return;
+      }
+      
+      if (!questions[vocabCategory]) {
+        const res = await fetch(SHEET_CSV[vocabCategory]);
+        const text = await res.text();
+        questions[vocabCategory] = parseCSV(text, vocabCategory);
+      }
+      
+      if (vocabMode === 'learn') {
+        // 單字學習頁面
+        vocabData = questions[vocabCategory];
+        displayVocabLearnPage(1, false); // 正常模式
+      } else if (vocabMode === 'learn-hidden') {
+        // 單字學習頁面（隱藏讀音）
+        vocabData = questions[vocabCategory];
+        displayVocabLearnPage(1, true); // 隱藏讀音模式
+      } else {
+        // 單字測驗
+        current = shuffle(questions[vocabCategory]).slice(0, TOTAL);
+        window.quizState = { mode: vocabCategory, idx: 0, score: 0, selectedChoice: null, answered: false };
+        showQuestion();
+      }
     }
   };
   
@@ -66,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-function displayVocabLearnPage(page) {
+function displayVocabLearnPage(page, hiddenMode = false) {
   const container = document.getElementById('quiz-container');
   const paginationContainer = document.getElementById('pagination-container');
   container.innerHTML = '';
@@ -79,29 +150,68 @@ function displayVocabLearnPage(page) {
   const end = start + ITEMS_PER_PAGE;
   const pageData = vocabData.slice(start, end);
 
-  const categoryDropdown = document.getElementById('learn-category');
-  const selectedCategoryName = categoryDropdown.options[categoryDropdown.selectedIndex].text;
+  // 判斷是否為文法學習模式
+  const subjectType = document.getElementById('subject-type').value;
+  const isGrammarMode = subjectType === 'grammar';
 
-  let tableHTML = `
-    <div class="vocab-table-container">
-      <h2>📚 單字學習表 (${selectedCategoryName})</h2>
-      <div class="vocab-table">
-        <div class="table-header">
-          <div class="table-cell header">漢字</div>
-          <div class="table-cell header">平假名</div>
-          <div class="table-cell header">詞義</div>
-        </div>
-  `;
-  
-  pageData.forEach((row, index) => {
-    tableHTML += `
-      <div class="table-row ${index % 2 === 0 ? 'even' : 'odd'}">
-        <div class="table-cell kanji">${row[0] || ''}</div>
-        <div class="table-cell hiragana">${row[1] || ''}</div>
-        <div class="table-cell meaning">${row[2] || ''}</div>
-      </div>
+  let selectedCategoryName = '';
+  if (isGrammarMode) {
+    selectedCategoryName = '文法';
+  } else {
+    const categoryDropdown = document.getElementById('vocab-category');
+    selectedCategoryName = categoryDropdown.options[categoryDropdown.selectedIndex].text;
+  }
+
+  let tableHTML = '';
+  if (isGrammarMode) {
+    // 文法學習表格
+    tableHTML = `
+      <div class="vocab-table-container">
+        <h2>📚 文法學習表 (${selectedCategoryName})</h2>
+        <div class="vocab-table">
+          <div class="table-header">
+            <div class="table-cell header">文法句型</div>
+            <div class="table-cell header">說明</div>
+            <div class="table-cell header">範例</div>
+          </div>
     `;
-  });
+    
+    pageData.forEach((row, index) => {
+      tableHTML += `
+        <div class="table-row ${index % 2 === 0 ? 'even' : 'odd'}">
+          <div class="table-cell kanji">${row[0] || ''}</div>
+          <div class="table-cell hiragana">${row[1] || ''}</div>
+          <div class="table-cell meaning">${row[2] || ''}</div>
+        </div>
+      `;
+    });
+  } else {
+    // 單字學習表格
+    const modeText = hiddenMode ? '（隱藏讀音模式）' : '';
+    tableHTML = `
+      <div class="vocab-table-container">
+        <h2>📚 單字學習表 (${selectedCategoryName}) ${modeText}</h2>
+        <div class="vocab-table">
+          <div class="table-header">
+            <div class="table-cell header">漢字</div>
+            <div class="table-cell header">平假名</div>
+            <div class="table-cell header">詞義</div>
+          </div>
+    `;
+    
+    pageData.forEach((row, index) => {
+      const hiraganaClass = hiddenMode ? 'hiragana hidden-reading' : 'hiragana';
+      const kanjiClass = hiddenMode ? 'kanji clickable-kanji' : 'kanji';
+      
+      tableHTML += `
+        <div class="table-row ${index % 2 === 0 ? 'even' : 'odd'}">
+          <div class="table-cell ${kanjiClass}" ${hiddenMode ? 'onclick="toggleReading(this)"' : ''}>${row[0] || ''}</div>
+          <div class="table-cell ${hiraganaClass}">${row[1] || ''}</div>
+          <div class="table-cell meaning">${row[2] || ''}</div>
+        </div>
+      `;
+    });
+  }
   
   tableHTML += `
       </div>
@@ -119,7 +229,7 @@ function displayVocabLearnPage(page) {
   if (page === 1) {
     prevBtn.classList.add('disabled');
   } else {
-    prevBtn.onclick = () => displayVocabLearnPage(page - 1);
+    prevBtn.onclick = () => displayVocabLearnPage(page - 1, hiddenMode);
   }
   paginationContainer.appendChild(prevBtn);
 
@@ -136,9 +246,182 @@ function displayVocabLearnPage(page) {
   if (page === totalPages) {
     paginationNextBtn.classList.add('disabled');
   } else {
-    paginationNextBtn.onclick = () => displayVocabLearnPage(page + 1);
+    paginationNextBtn.onclick = () => displayVocabLearnPage(page + 1, hiddenMode);
   }
   paginationContainer.appendChild(paginationNextBtn);
+}
+
+function displayGrammarQuizPage(page) {
+  const container = document.getElementById('quiz-container');
+  const paginationContainer = document.getElementById('pagination-container');
+  container.innerHTML = '';
+  paginationContainer.innerHTML = '';
+
+  const totalPages = Math.ceil(vocabData.length / ITEMS_PER_PAGE);
+  page = Math.max(1, Math.min(page, totalPages)); // Ensure page is within bounds
+
+  const start = (page - 1) * ITEMS_PER_PAGE;
+  const end = start + ITEMS_PER_PAGE;
+  const pageData = vocabData.slice(start, end);
+
+  // 建立文法測驗頁面
+  let quizHTML = `
+    <div class="grammar-quiz-container">
+      <h2>📝 文法測驗 (第 ${page} / ${totalPages} 頁)</h2>
+      <div class="quiz-questions">
+  `;
+  
+  pageData.forEach((row, index) => {
+    const questionNum = start + index + 1;
+    // A欄：題目，B-E欄：選項，F欄：正確答案編號，G欄：詳細解答
+    const options = [
+      { text: row[1], index: 1 }, // B欄 = 選項1
+      { text: row[2], index: 2 }, // C欄 = 選項2  
+      { text: row[3], index: 3 }, // D欄 = 選項3
+      { text: row[4], index: 4 }  // E欄 = 選項4
+    ];
+    const correctIndex = parseInt(row[5]);
+    
+    quizHTML += `
+      <div class="quiz-question" data-question="${questionNum - 1}">
+        <div class="question-header">
+          <span class="question-number">第 ${questionNum} 題</span>
+        </div>
+        <div class="question-text">${row[0].replace(/___/,'<strong>___</strong>')}</div>
+        <div class="question-choices">
+    `;
+    
+    options.forEach((option, optIndex) => {
+      quizHTML += `
+        <div class="quiz-choice" 
+             data-question="${questionNum - 1}" 
+             data-option="${optIndex + 1}"
+             data-is-correct="${option.index === correctIndex}">
+          ${optIndex + 1}. ${option.text}
+        </div>
+      `;
+    });
+    
+    quizHTML += `
+        </div>
+        <div class="question-detail hidden" data-question="${questionNum - 1}">
+          <div class="detail-title">詳細解答：</div>
+          <div class="detail-content">${row[6] || ''}</div>
+        </div>
+      </div>
+    `;
+  });
+  
+  quizHTML += `
+      </div>
+      <div class="quiz-controls">
+        <button id="check-answers" class="answer-btn">檢查答案</button>
+        <button id="show-details" class="answer-btn hidden">顯示詳解</button>
+      </div>
+    </div>
+  `;
+  
+  container.innerHTML = quizHTML;
+  
+  // 添加選擇事件監聽器
+  document.querySelectorAll('.quiz-choice').forEach(choice => {
+    choice.addEventListener('click', function() {
+      const questionNum = this.dataset.question;
+      // 取消同一題目的其他選項
+      document.querySelectorAll(`.quiz-choice[data-question="${questionNum}"]`).forEach(c => {
+        c.classList.remove('selected');
+      });
+      // 選中當前選項
+      this.classList.add('selected');
+    });
+  });
+  
+  // 檢查答案按鈕
+  document.getElementById('check-answers').addEventListener('click', function() {
+    checkGrammarQuizAnswers();
+    this.classList.add('hidden');
+    document.getElementById('show-details').classList.remove('hidden');
+  });
+  
+  // 顯示詳解按鈕
+  document.getElementById('show-details').addEventListener('click', function() {
+    document.querySelectorAll('.question-detail').forEach(detail => {
+      detail.classList.remove('hidden');
+    });
+    this.classList.add('hidden');
+  });
+  
+  // Render Pagination
+  if (totalPages <= 1) return;
+
+  // Previous Button
+  const prevBtn = document.createElement('button');
+  prevBtn.textContent = '上一頁';
+  prevBtn.className = 'pagination-btn';
+  if (page === 1) {
+    prevBtn.classList.add('disabled');
+  } else {
+    prevBtn.onclick = () => displayGrammarQuizPage(page - 1);
+  }
+  paginationContainer.appendChild(prevBtn);
+
+  // Page numbers info
+  const pageIndicator = document.createElement('span');
+  pageIndicator.textContent = `第 ${page} / ${totalPages} 頁`;
+  pageIndicator.className = 'pagination-info';
+  paginationContainer.appendChild(pageIndicator);
+  
+  // Next Button
+  const paginationNextBtn = document.createElement('button');
+  paginationNextBtn.textContent = '下一頁';
+  paginationNextBtn.className = 'pagination-btn';
+  if (page === totalPages) {
+    paginationNextBtn.classList.add('disabled');
+  } else {
+    paginationNextBtn.onclick = () => displayGrammarQuizPage(page + 1);
+  }
+  paginationContainer.appendChild(paginationNextBtn);
+}
+
+function checkGrammarQuizAnswers() {
+  let correct = 0;
+  let total = 0;
+  
+  document.querySelectorAll('.quiz-question').forEach(question => {
+    const questionNum = question.dataset.question;
+    const selectedChoice = question.querySelector('.quiz-choice.selected');
+    const correctChoice = question.querySelector('.quiz-choice[data-is-correct="true"]');
+    
+    total++;
+    
+    if (selectedChoice) {
+      if (selectedChoice.dataset.isCorrect === 'true') {
+        selectedChoice.classList.add('correct');
+        selectedChoice.innerHTML += ' <span class="check-mark">✓</span>';
+        correct++;
+      } else {
+        selectedChoice.classList.add('wrong');
+        selectedChoice.innerHTML += ' <span class="cross-mark">✗</span>';
+      }
+    }
+    
+    // 顯示正確答案
+    if (correctChoice && (!selectedChoice || selectedChoice !== correctChoice)) {
+      correctChoice.classList.add('correct');
+      correctChoice.innerHTML += ' <span class="check-mark">✓</span>';
+    }
+    
+    // 禁用所有選項
+    question.querySelectorAll('.quiz-choice').forEach(choice => {
+      choice.style.pointerEvents = 'none';
+    });
+  });
+  
+  // 顯示分數
+  const scoreDiv = document.createElement('div');
+  scoreDiv.className = 'quiz-score';
+  scoreDiv.innerHTML = `<h3>🎉 本頁分數：${correct}/${total}</h3>`;
+  document.querySelector('.grammar-quiz-container').insertBefore(scoreDiv, document.querySelector('.quiz-controls'));
 }
 
 function showQuestion() {
@@ -352,7 +635,25 @@ function parseCSV(text, mode) {
       const parts = line.split(',');
       if (mode==='Vocab')   return [parts[0], parts[1], parts[2], parts[3], parts[4], parts[5], parts[6]]; // 7個欄位
       if (mode.startsWith('Vocab_'))  return [parts[0] || '', parts[1] || '', parts[2] || '']; // 3個欄位
+      if (mode==='Grammar') return [parts[0] || '', parts[1] || '', parts[2] || '']; // 3個欄位：句型、說明、範例
       if (mode==='GrMatch') return [parts[0], parts[1], parts[2]];
       if (mode==='GrFill')  return [parts[0], parts[1], parts[2], parts[3], parts[4], parts[5], parts[6]]; // 7個欄位
+      if (mode==='GrammarFill') return [parts[0], parts[1], parts[2], parts[3], parts[4], parts[5], parts[6]]; // 7個欄位
     });
+}
+
+// 隱藏讀音模式：點擊漢字顯示/隱藏平假名
+function toggleReading(kanjiElement) {
+  const row = kanjiElement.closest('.table-row');
+  const hiraganaElement = row.querySelector('.hidden-reading');
+  
+  if (hiraganaElement.classList.contains('hidden-reading')) {
+    hiraganaElement.classList.remove('hidden-reading');
+    hiraganaElement.classList.add('shown-reading');
+    kanjiElement.classList.add('clicked');
+  } else if (hiraganaElement.classList.contains('shown-reading')) {
+    hiraganaElement.classList.remove('shown-reading');
+    hiraganaElement.classList.add('hidden-reading');
+    kanjiElement.classList.remove('clicked');
+  }
 }
