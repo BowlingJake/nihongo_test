@@ -26,6 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('quiz-container').innerHTML = '';
     document.getElementById('pagination-container').innerHTML = '';
     
+    // 重置布局class
+    document.body.classList.remove('grammar-wide-layout');
+    
     // 隱藏所有選項並重置選擇
     grammarOptions.classList.add('hidden');
     vocabOptions.classList.add('hidden');
@@ -70,6 +73,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('quiz-container').innerHTML = '';
     document.getElementById('pagination-container').innerHTML = '';
     document.getElementById('next').classList.add('hidden');
+    
+    // 重置布局class
+    document.body.classList.remove('grammar-wide-layout');
   
     if (subjectType === 'grammar') {
       // 文法模式
@@ -164,28 +170,51 @@ function displayVocabLearnPage(page, hiddenMode = false) {
 
   let tableHTML = '';
   if (isGrammarMode) {
+    // 設定文法學習模式的寬版布局
+    document.body.classList.add('grammar-wide-layout');
+    
     // 文法學習表格
     tableHTML = `
       <div class="vocab-table-container">
         <h2>📚 文法學習表 (${selectedCategoryName})</h2>
-        <div class="vocab-table">
+        <div class="grammar-horizontal-table">
           <div class="table-header">
-            <div class="table-cell header">文法句型</div>
-            <div class="table-cell header">說明</div>
-            <div class="table-cell header">範例</div>
+            <div class="table-cell header pattern-col">文法句型</div>
+            <div class="table-cell header description-col">中文說明</div>
+            <div class="table-cell header example-col">例句</div>
+            <div class="table-cell header meaning-col">例句中文</div>
+            <div class="table-cell header action-col">操作</div>
           </div>
     `;
     
     pageData.forEach((row, index) => {
+      const hasExtraInfo = (row[4] && row[4].trim()) || (row[5] && row[5].trim()) || (row[6] && row[6].trim()) || (row[7] && row[7].trim());
       tableHTML += `
-        <div class="table-row ${index % 2 === 0 ? 'even' : 'odd'}">
-          <div class="table-cell kanji">${row[0] || ''}</div>
-          <div class="table-cell hiragana">${row[1] || ''}</div>
-          <div class="table-cell meaning">${row[2] || ''}</div>
+        <div class="table-row ${index % 2 === 0 ? 'even' : 'odd'}" data-row-index="${index}">
+          <div class="table-cell grammar-pattern pattern-col">${row[0] || ''}</div>
+          <div class="table-cell grammar-description description-col">${row[1] || ''}</div>
+          <div class="table-cell grammar-example example-col">${row[2] || ''}</div>
+          <div class="table-cell grammar-meaning meaning-col">${row[3] || ''}</div>
+          <div class="table-cell grammar-action action-col">
+            ${hasExtraInfo ? `<button class="expand-btn" onclick="toggleGrammarDetails(${index})">📖 詳細</button>` : '<span class="no-extra">—</span>'}
+          </div>
         </div>
+        ${hasExtraInfo ? `
+        <div class="grammar-detail-row hidden" data-row-index="${index}">
+          <div class="grammar-detail-content">
+            ${row[4] && row[4].trim() ? `<div class="detail-section connection"><strong>🔗 接續方式：</strong><br>${row[4]}</div>` : ''}
+            ${row[5] && row[5].trim() ? `<div class="detail-section nuance"><strong>🎯 核心語感：</strong><br>${row[5]}</div>` : ''}
+            ${row[6] && row[6].trim() ? `<div class="detail-section etymology"><strong>📚 語源解析：</strong><br>${row[6]}</div>` : ''}
+            ${row[7] && row[7].trim() ? `<div class="detail-section comparison"><strong>⚖️ 比較：</strong><br>${row[7]}</div>` : ''}
+          </div>
+        </div>
+        ` : ''}
       `;
     });
   } else {
+    // 移除文法學習模式的寬版布局class
+    document.body.classList.remove('grammar-wide-layout');
+    
     // 單字學習表格
     const modeText = hiddenMode ? '（隱藏讀音模式）' : '';
     tableHTML = `
@@ -635,7 +664,7 @@ function parseCSV(text, mode) {
       const parts = line.split(',');
       if (mode==='Vocab')   return [parts[0], parts[1], parts[2], parts[3], parts[4], parts[5], parts[6]]; // 7個欄位
       if (mode.startsWith('Vocab_'))  return [parts[0] || '', parts[1] || '', parts[2] || '']; // 3個欄位
-      if (mode==='Grammar') return [parts[0] || '', parts[1] || '', parts[2] || '']; // 3個欄位：句型、說明、範例
+      if (mode==='Grammar') return [parts[0] || '', parts[1] || '', parts[2] || '', parts[3] || '', parts[4] || '', parts[5] || '', parts[6] || '', parts[7] || '']; // 8個欄位：句型、中文說明、例句、例句中文、接續方式、核心語感、語源解析、比較
       if (mode==='GrMatch') return [parts[0], parts[1], parts[2]];
       if (mode==='GrFill')  return [parts[0], parts[1], parts[2], parts[3], parts[4], parts[5], parts[6]]; // 7個欄位
       if (mode==='GrammarFill') return [parts[0], parts[1], parts[2], parts[3], parts[4], parts[5], parts[6]]; // 7個欄位
@@ -655,5 +684,27 @@ function toggleReading(kanjiElement) {
     hiraganaElement.classList.remove('shown-reading');
     hiraganaElement.classList.add('hidden-reading');
     kanjiElement.classList.remove('clicked');
+  }
+}
+
+// 文法詳細資訊展開/收合功能
+function toggleGrammarDetails(rowIndex) {
+  const detailRow = document.querySelector(`.grammar-detail-row[data-row-index="${rowIndex}"]`);
+  const expandBtn = document.querySelector(`.table-row[data-row-index="${rowIndex}"] .expand-btn`);
+  
+  if (detailRow && expandBtn) {
+    if (detailRow.classList.contains('hidden')) {
+      // 展開詳細資訊
+      detailRow.classList.remove('hidden');
+      detailRow.classList.add('visible');
+      expandBtn.innerHTML = '📖 收合';
+      expandBtn.classList.add('expanded');
+    } else {
+      // 收合詳細資訊
+      detailRow.classList.remove('visible');
+      detailRow.classList.add('hidden');
+      expandBtn.innerHTML = '📖 詳細';
+      expandBtn.classList.remove('expanded');
+    }
   }
 }

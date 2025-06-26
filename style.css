@@ -10,6 +10,11 @@ body {
   max-width: 480px;
   margin: auto;
 }
+
+/* 文法學習模式使用更寬的布局 */
+.grammar-wide-layout {
+  max-width: 1400px !important;
+}
 header {
   display: flex;
   gap: var(--gap);
@@ -817,5 +822,286 @@ header button:active {
   
   .hidden-reading:before {
     font-size: 0.6rem;
+  }
+}
+
+/* 文法橫向表格樣式 */
+.grammar-horizontal-table {
+  display: grid;
+  grid-template-columns: 2fr 2.5fr 3fr 2.5fr 1fr;
+  gap: 0;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 0.9rem;
+}
+
+.grammar-horizontal-table .table-cell {
+  padding: 0.8rem 0.6rem;
+  border-right: 1px solid #e9ecef;
+  border-bottom: 1px solid #e9ecef;
+  word-break: break-word;
+  line-height: 1.4;
+}
+
+.grammar-horizontal-table .table-cell.pattern-col {
+  font-weight: bold;
+  color: #333;
+  font-size: 1rem;
+}
+
+.grammar-horizontal-table .table-cell.description-col {
+  color: #007bff;
+  font-weight: 500;
+}
+
+.grammar-horizontal-table .table-cell.example-col {
+  color: #6c757d;
+  font-style: italic;
+}
+
+.grammar-horizontal-table .table-cell.meaning-col {
+  color: #28a745;
+  font-weight: 500;
+}
+
+.grammar-horizontal-table .table-cell.action-col {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.expand-btn {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+  font-weight: 500;
+}
+
+.expand-btn:hover {
+  background: linear-gradient(135deg, #0056b3, #004085);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+.expand-btn.expanded {
+  background: linear-gradient(135deg, #28a745, #1e7e34);
+  box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
+}
+
+.expand-btn.expanded:hover {
+  background: linear-gradient(135deg, #1e7e34, #155724);
+  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+}
+
+.no-extra {
+  color: #adb5bd;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+.grammar-detail-row {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  border-top: 2px solid #dee2e6;
+  transition: all 0.4s ease;
+}
+
+.grammar-detail-row.hidden {
+  display: none;
+}
+
+.grammar-detail-row.visible {
+  display: block;
+  animation: slideDown 0.4s ease-out;
+}
+
+.grammar-detail-content {
+  padding: 1.5rem;
+  line-height: 1.6;
+}
+
+.detail-section {
+  margin-bottom: 1rem;
+  padding: 0.8rem;
+  background: white;
+  border-radius: 8px;
+  border-left: 4px solid #007bff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.detail-section.connection {
+  border-left-color: #ff6b35;
+  background: linear-gradient(135deg, #fff5f3, #fff);
+}
+
+.detail-section.nuance {
+  border-left-color: #007bff;
+  background: linear-gradient(135deg, #f3f8ff, #fff);
+}
+
+.detail-section.etymology {
+  border-left-color: #28a745;
+  background: linear-gradient(135deg, #f3fff5, #fff);
+}
+
+.detail-section.comparison {
+  border-left-color: #ffc107;
+  background: linear-gradient(135deg, #fffef3, #fff);
+}
+
+.detail-section:last-child {
+  margin-bottom: 0;
+}
+
+.detail-section strong {
+  color: #495057;
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+@keyframes slideDown {
+  0% {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    max-height: 500px;
+    transform: translateY(0);
+  }
+}
+
+/* 手機端文法橫向表格響應式設計 */
+@media (max-width: 768px) {
+  .grammar-horizontal-table {
+    grid-template-columns: 1fr;
+    gap: 1px;
+    font-size: 0.85rem;
+  }
+  
+  .grammar-horizontal-table .table-cell {
+    padding: 0.6rem 0.5rem;
+    border-bottom: 1px solid #e9ecef;
+    border-right: none;
+  }
+  
+  .grammar-horizontal-table .table-cell.header {
+    display: none;
+  }
+  
+  .grammar-horizontal-table .table-cell.pattern-col:before {
+    content: "📖 文法句型：";
+    font-weight: bold;
+    color: #007bff;
+    display: block;
+    font-size: 0.75rem;
+    margin-bottom: 0.3rem;
+  }
+  
+  .grammar-horizontal-table .table-cell.description-col:before {
+    content: "💡 中文說明：";
+    font-weight: bold;
+    color: #007bff;
+    display: block;
+    font-size: 0.75rem;
+    margin-bottom: 0.3rem;
+  }
+  
+  .grammar-horizontal-table .table-cell.example-col:before {
+    content: "📝 例句：";
+    font-weight: bold;
+    color: #6c757d;
+    display: block;
+    font-size: 0.75rem;
+    margin-bottom: 0.3rem;
+  }
+  
+  .grammar-horizontal-table .table-cell.meaning-col:before {
+    content: "🌸 例句中文：";
+    font-weight: bold;
+    color: #28a745;
+    display: block;
+    font-size: 0.75rem;
+    margin-bottom: 0.3rem;
+  }
+  
+  .expand-btn {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .grammar-horizontal-table {
+    font-size: 0.8rem;
+  }
+  
+  .grammar-horizontal-table .table-cell {
+    padding: 0.5rem 0.4rem;
+  }
+  
+  .expand-btn {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.8rem;
+  }
+  
+  .grammar-detail-content {
+    padding: 0.8rem;
+  }
+  
+  .detail-section {
+    padding: 0.6rem;
+    margin-bottom: 0.6rem;
+  }
+}
+
+/* 平板電腦優化 */
+@media (min-width: 481px) and (max-width: 768px) {
+  .grammar-horizontal-table {
+    grid-template-columns: 1.8fr 2.2fr 2.8fr 2.2fr 0.8fr;
+    font-size: 0.85rem;
+  }
+  
+  .grammar-horizontal-table .table-cell {
+    padding: 0.7rem 0.5rem;
+  }
+  
+  .expand-btn {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.75rem;
+  }
+}
+
+/* 大螢幕優化 */
+@media (min-width: 1200px) {
+  .grammar-wide-layout .grammar-horizontal-table {
+    grid-template-columns: 2.5fr 3fr 4fr 3fr 1fr;
+    font-size: 1rem;
+  }
+  
+  .grammar-wide-layout .grammar-horizontal-table .table-cell {
+    padding: 1rem 0.8rem;
+  }
+}
+
+/* 中等螢幕優化 */
+@media (min-width: 769px) and (max-width: 1199px) {
+  .grammar-wide-layout .grammar-horizontal-table {
+    grid-template-columns: 2fr 2.5fr 3.5fr 2.5fr 0.8fr;
+    font-size: 0.95rem;
+  }
+  
+  .grammar-wide-layout .grammar-horizontal-table .table-cell {
+    padding: 0.9rem 0.7rem;
   }
 }
